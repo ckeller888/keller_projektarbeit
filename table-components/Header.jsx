@@ -1,5 +1,4 @@
 import { Box, AppBar, Toolbar, TextField, Button } from "@mui/material";
-// import * as styles from "./App2.module.css";
 import { Dropdown } from "./Dropdown";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -8,7 +7,6 @@ export const Titelleiste = ({
   standortnameLabel,
   standortnameOptions,
   standortnameValue,
-  datumValue,
   incrementStandortname,
   incrementDatum,
   incrementResetStandortname,
@@ -21,7 +19,7 @@ export const Titelleiste = ({
       style={{ backgroundColor: "white" }}
     >
       <Toolbar>
-      <h3 style={{color: 'black'  }}>Tabelle Meteodaten vom Jahr 2023</h3>
+      <h2 style={{color: 'black'  }}>Tabelle Meteodaten</h2>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginLeft: "auto" }}>
           <Dropdown
             label={standortnameLabel}
@@ -32,8 +30,7 @@ export const Titelleiste = ({
           />
       
           <DatePicker
-            label="Wählen Sie ein Datum"
-            value={datumValue}
+            label="Datumsauswahl"
             onChange={incrementDatum}
             renderInput={(params) => <TextField {...params} />}
             views={["month", "day"]}

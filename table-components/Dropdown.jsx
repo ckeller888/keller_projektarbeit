@@ -6,7 +6,6 @@ import {
   Select,
   Box,
 } from "@mui/material";
-// import "./App2.module.css";
 
 export const Dropdown = ({ label, options, value, increment, onClick }) => {
   return (

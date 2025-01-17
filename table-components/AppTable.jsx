@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Titelleiste } from "./Titelleiste";
-import { Tabelle } from "./Tabelle";
+import { Titelleiste } from "./Header";
+import { Tabelle } from "./Table";
 
 function App() {
   const [formattedData, setFormattedData] = useState([]);
@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/data")
+      .get("/api/data")
       .then((response) => {
         const data = response.data;
 
@@ -64,10 +64,9 @@ function App() {
     <div className="App">
       <div>
         <Titelleiste
-          standortnameLabel="Wählen Sie einen Standort"
+          standortnameLabel="Standortauswahl"
           standortnameOptions={standortnameOptions}
           standortnameValue={standortname}
-          datumValue={datum}
           incrementStandortname={handleStandortnameChange}
           incrementDatum={handleDatumChange}
           incrementResetStandortname={resetStandortname}

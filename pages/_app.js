@@ -1,59 +1,7 @@
-
-// import MapAPI from "./map/MapAPI";
-// function App() {
-//     return (
-//         <>
-//             <MapAPI />
-//         </>
-//     );
-// }
-// export default App;
-
-
-
-// import { VegaViewerAPI } from "./components/VegaViewerAPI";
-// function App() {
-//     return (
-//         <>
-//             <VegaViewerAPI />
-//         </>
-//     );
-// }
-// export default App;
-
-
-
-// FUNKTIONIERT VL ÜBERPRÜFEN
-// import AppBarchart from "./chart/AppBarchart";
-// function App() {
-//     return (
-//         <>
-//             <AppBarchart />
-//         </>
-//     );
-// }
-// export default App;
-
-
-
-
-// FUNKTIONIERT
-// import AppTable from "./table/AppTable";
-// function App() {
-//     return (
-//         <>
-//             <AppTable />
-//         </>
-//     );
-// }
-// export default App;
-
-
 import React, { useState } from "react";
 import { Button, Container, Stack } from "@mui/material";
-// import MapView from "../map-components/MapAPI";
-import TableView from "../data-components/table/AppTable";
-import BarChartView from "../data-components/chart/AppBarchart";
+import TableView from "../table-components/AppTable";
+import BarChartView from "../chart-components/AppBarchart";
 
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css"

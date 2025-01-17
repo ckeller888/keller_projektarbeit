@@ -16,7 +16,7 @@ export function App() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/data")
+      .get("/api/data")
       .then((response) => {
         setData(response.data);
       })
@@ -55,10 +55,10 @@ export function App() {
         color: {
             field: "Standortname",
             type: "nominal",
-            // legend: {
-            //   title: "Standorte",
-            //   orient: "right",
-            // },
+            legend: {
+              title: "Standorte",
+              orient: "right",
+            },
         },
       },
       data: { values: filteredData },
@@ -93,7 +93,7 @@ export function App() {
         x: { field: "Standortname", title: "" ,type: "nominal"},
         y: {
           field: "RainDur",
-          title: "Niederschlagsdauer",
+          title: "Niederschlagsdauer [min]",
           type: "quantitative"
           
         },
@@ -113,8 +113,8 @@ export function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} locale={de}>
-      <Box sx={{ padding: 2 }}>
-        <h3>Datenvisualisierungen für den ausgewählten Tag und Monat (Jahr 2023)</h3>
+      <Box sx={{ padding: 0 }}>
+        <h2>Balkendiagramme für den ausgewählten Tag und Monat (Jahr 2023)</h2>
 
         <DatePicker
           label="Wählen Sie ein Datum"
@@ -124,7 +124,7 @@ export function App() {
           views={["month", "day"]}
         />
 
-        <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
           <Box sx={{ flex: 1, marginRight: 2 }}>
             <h4>Temperatur</h4>
             <VegaLite spec={TemperaturPlot(filteredData)} />

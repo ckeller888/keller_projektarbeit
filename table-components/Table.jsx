@@ -7,7 +7,6 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-// import "./App2.module.css";
 
 export const Tabelle = ({ data }) => {
   return (
@@ -17,9 +16,9 @@ export const Tabelle = ({ data }) => {
           <TableRow>
             <TableCell id="TableHeader">Datum</TableCell>
             <TableCell id="TableHeader">Standortname</TableCell>
-            <TableCell id="TableHeader">Temperatur</TableCell>
-            <TableCell id="TableHeader">Niederschlagsdauer</TableCell>
-            <TableCell id="TableHeader">Luftdruck</TableCell>
+            <TableCell id="TableHeader">Temperatur [°]</TableCell>
+            <TableCell id="TableHeader">Niederschlagsdauer [min]</TableCell>
+            <TableCell id="TableHeader">Luftdruck [hPa]</TableCell>
           </TableRow>
         </TableHead>
         <TableBody id="TableBody">

@@ -1,121 +1,137 @@
 import { renderToString } from "react-dom/server";
-import { CssBaseline, Link, Typography } from "@mui/material";
+import { CssBaseline, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import L from "leaflet";
-import { MapContainer, TileLayer, GeoJSON, LayersControl, Circle } from "react-leaflet";
-import Header from "./Header";
+import { MapContainer, TileLayer, GeoJSON, LayersControl } from "react-leaflet";
 import Params from "./Params";
-import { BASE_LAYERS } from "./baseLayer";
+import { BASE_LAYERS } from "./BaseLayer";
 
 const outerBounds = [
-  [-80, -180],
-  [80, 180],
+  [47.335589, 8.421493],
+  [47.431759, 8.64684],
 ];
 
-const BASE_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/";
+const BASE_URL = "/api";
 
-function getMarkerRadius(magnitude) {
-  const baseArea = 10;
-  const scaleFactor = 2.5;
-  const area = baseArea * Math.pow(10, (magnitude - 1) / scaleFactor);
+const pointToLayer = (feature, latlng) => {
+  const { T: temp } = feature.properties;
 
-  return Math.sqrt(area / Math.PI);
-}
-
-const pointToLayer = ({ properties }, latlng) => {
-  const radius = getMarkerRadius(properties.mag);
-  return L.circleMarker(latlng, { radius: radius, color: "deeppink" });
+  let color;
+  if (temp >= 25) {
+    color = "red";
+  } else if (temp <= 10) {
+    color = "blue";
+  } else {
+    color = "orange";
+  }
+  return L.circleMarker(latlng, {
+    radius: 10,
+    color: color,
+    fillOpacity: 0.6,
+  });
 };
 
 const onEachFeature = (feature, layer) => {
-  if (feature.properties && feature.properties.place) {
-    const popup = <Popup {...feature} />;
+  const { Standortname, T, RainDur, p } = feature.properties;
 
-    layer.bindPopup(renderToString(popup));
-  }
+  const popupContent = (
+    <Popup
+      Standortname={Standortname}
+      T={T}
+      RainDur={RainDur}
+      p={p}
+    />
+  );
+
+  layer.bindPopup(renderToString(popupContent));
 };
 
-function Popup({ properties, geometry }) {
-  const [lon, lat, depth] = geometry.coordinates;
-
+function Popup({ Standortname, T, RainDur, p }) {
   return (
     <>
-      <Typography variant="h2">{properties.place}</Typography>
+      <Typography variant="h3">{Standortname}</Typography>
       <p>
-        <span style={{ fontWeight: "bold" }}>MAGNITUDE</span>: {properties.mag}
-        <br />
-        <span style={{ fontWeight: "bold" }}>DEPTH</span>: {depth} km
-        <br />
-        <span style={{ fontWeight: "bold" }}>TYPE</span>: {properties.type}
-        <br />
-        <span style={{ fontWeight: "bold" }}>Lon/Lat</span>: {lon}, {lat}
+        <strong>Temperatur:</strong> {T}°C<br />
+        <strong>Niederschlag:</strong> {RainDur} mm<br />
+        <strong>Luftdruck:</strong> {p} hPa
       </p>
-      <Typography variant="h3">
-        <Link variant="h3" target="_blank" href={properties.url}>
-          More info
-        </Link>
-      </Typography>
     </>
   );
 }
 
 function Map() {
-  const [quakesJson, setQuakesJson] = useState([]);
-  // const [minMag, setMinMag] = useState("2.5");
-  // const [timespan, setTimespan] = useState("week");
-  const [geoJsonKey, setgeoJsonKey] = useState(null);
-  const [params, setParams] = useState({
-    minMag: "2.5",
-    timespan: "day",
+  const [geoJsonData, setGeoJsonData] = useState(null);
+  const [geoJsonKey, setGeoJsonKey] = useState(null);
+  const [filters, setFilters] = useState({
+    date: new Date("2023-01-01"),
+    temp: null,
+    rain: null,
+    pressure: null,
   });
 
-  // calculated state
-  const url = `${BASE_URL}/${params.minMag}_${params.timespan}.geojson`;
+  const fetchFilteredData = async () => {
+  const formattedDate = filters.date.toISOString().split("T")[0];
+  
+  const params = new URLSearchParams({
+    date: formattedDate,
+  });
+  
+  if (filters.temp !== null) params.append("temp", filters.temp);
+  if (filters.rain !== null) params.append("rain", filters.rain);
+  if (filters.pressure !== null) params.append("pressure", filters.pressure);
 
-  async function fetchQuakeData(url) {
-    try {
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        throw new Error(`Error fetching data from ${url}`);
-      }
-      const data = await resp.json();
-      setQuakesJson(data.features);
-      setgeoJsonKey(data.metadata.generated);
-    } catch (error) {
-      console.log(error);
+  const url = `${BASE_URL}/data/filter?${params}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error fetching data from ${url}`);
     }
+    const result = await response.json();
+    const geoJsonFormatted = {
+      type: "FeatureCollection",
+      features: result.map((entry) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [entry.WGS84_lng, entry.WGS84_lat],
+        },
+        properties: entry,
+      })),
+    };
+    setGeoJsonData(geoJsonFormatted);
+    setGeoJsonKey(Date.now());
+  } catch (error) {
+    console.error("Error fetching data:", error);
   }
+};
+
 
   useEffect(() => {
-    fetchQuakeData(url);
-  }, []);
+    fetchFilteredData();
+  }, [filters]);
 
-  useEffect(() => {
-    if (params.timespan === "month") {
-      setParams(p => ({ ...p, minMag: "2.5" }));
-    }
-  }, [params.timespan]);
-
-  useEffect(() => {
-    // console.log(params);
-    fetchQuakeData(url);
-  }, [params.minMag, params.timespan]);
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
   return (
     <>
       <CssBaseline />
-      {/* <Header /> */}
-      <Params params={params} setParams={setParams} />
+      <Params filters={filters} onFilterChange={handleFilterChange} />
       <MapContainer
         style={{ height: "100vh" }}
         center={[0, 0]}
-        zoom={3}
-        minZoom={2}
+        zoom={12}
+        minZoom={12}
         maxBounds={outerBounds}
         maxBoundsViscosity={1}
       >
         <LayersControl position="topright">
-          {BASE_LAYERS.map(baseLayer => (
+          {BASE_LAYERS.map((baseLayer) => (
             <LayersControl.BaseLayer
               key={baseLayer.url}
               checked={baseLayer.checked}
@@ -124,14 +140,15 @@ function Map() {
               <TileLayer attribution={baseLayer.attribution} url={baseLayer.url} />
             </LayersControl.BaseLayer>
           ))}
-
-          <LayersControl.Overlay checked name="USGQ Earthquakes">
-            <GeoJSON
-              data={quakesJson}
-              pointToLayer={pointToLayer}
-              key={geoJsonKey}
-              onEachFeature={onEachFeature}
-            />
+          <LayersControl.Overlay checked name="Meteodaten">
+            {geoJsonData && (
+              <GeoJSON
+                key={geoJsonKey}
+                data={geoJsonData}
+                pointToLayer={pointToLayer}
+                onEachFeature={onEachFeature}
+              />
+            )}
           </LayersControl.Overlay>
         </LayersControl>
       </MapContainer>
