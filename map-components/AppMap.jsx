@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, GeoJSON, LayersControl } from "react-leaflet";
 import Params from "./Params";
-import { BASE_LAYERS } from "./BaseLayer";
+import { BASE_LAYERS } from "./baseLayer";
 
 const outerBounds = [
   [47.335589, 8.421493],
