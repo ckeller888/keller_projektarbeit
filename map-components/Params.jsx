@@ -1,18 +1,10 @@
-import React, { useState } from "react";
-import { Box, Stack, Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { Box, Stack, Typography} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Legend from "./Legend";
 
 export default function Params({ filters, onFilterChange }) {
-  const handleChange = (event, newValue) => {
-    if (newValue !== null) {
-      const attr = event.target.name;
-      onFilterChange(attr, newValue);
-    }
-  };
-
   const handleDateChange = (newDate) => {
     onFilterChange("date", newDate);
   };

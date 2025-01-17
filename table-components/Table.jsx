@@ -16,7 +16,7 @@ export const Tabelle = ({ data }) => {
           <TableRow>
             <TableCell id="TableHeader">Datum</TableCell>
             <TableCell id="TableHeader">Standortname</TableCell>
-            <TableCell id="TableHeader">Temperatur [°]</TableCell>
+            <TableCell id="TableHeader">Temperatur [°C]</TableCell>
             <TableCell id="TableHeader">Niederschlagsdauer [min]</TableCell>
             <TableCell id="TableHeader">Luftdruck [hPa]</TableCell>
           </TableRow>
